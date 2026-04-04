@@ -26,23 +26,7 @@ Automatically generates and emails a daily (or weekly) summary report from your 
 
 ## Sample Report Output
 
-```
-┌─────────────────────────────────────────┐
-│  Daily Summary   2025/04/03             │
-├──────────────┬──────────────┬───────────┤
-│ Yesterday     │ Yesterday    │ Month     │
-│ Count         │ Total        │ Total     │
-│ 12 items      │ ¥48,500      │ ¥320,000  │
-├──────────────┴──────────────┴───────────┤
-│ Category Breakdown                      │
-│  Sales        8 items   ¥38,000         │
-│  Refund       4 items   ¥10,500         │
-├─────────────────────────────────────────┤
-│ Status:  Completed: 8   Pending: 4      │
-└─────────────────────────────────────────┘
-```
-
-> Screenshot: *(add screenshot of actual email here)*
+![Email Preview](img/email-preview.png)
 
 ---
 

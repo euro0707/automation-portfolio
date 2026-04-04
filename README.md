@@ -7,6 +7,6 @@ Google Apps Script automation projects for Upwork clients.
 | # | Project | Description |
 |---|---------|-------------|
 | 01 | [Daily Report Automation](gas/01_daily-report-automation/) | Auto-sends HTML reports from Google Sheets by email |
-| 02 | Form → Sheet → Notify | (coming soon) |
+| 02 | [Form → Sheet → Notify](gas/02_form-to-sheet-notify/) | Auto-logs form submissions to Sheets and sends email notifications |
 | 03 | Invoice Generator | (coming soon) |
 | 04 | External API Integration | (coming soon) |

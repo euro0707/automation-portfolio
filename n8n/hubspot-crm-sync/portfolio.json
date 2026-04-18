@@ -1,0 +1,23 @@
+{
+  "slug": "hubspot-crm-sync",
+  "title": "HubSpot CRM Contact Qualifier",
+  "category": "CRM Integration",
+  "tool": "n8n + HubSpot + Claude AI",
+  "tags": ["n8n", "HubSpot CRM", "Claude API", "Google Sheets", "Slack", "Docker"],
+  "problem": "Sales reps spent 15+ minutes per lead manually reviewing new HubSpot contacts, assigning scores by gut feel, and copy-pasting summaries into Slack — with no consistent qualification criteria and no audit trail outside CRM.",
+  "solution": "A self-hosted n8n workflow (Docker) triggered by HubSpot's contact.creation webhook. It fetches the full contact record, sends it to Claude Haiku for lead scoring (1–10), category, priority, and recommended action, writes the AI output back to HubSpot as custom properties, appends a structured row to a Google Sheets pipeline tracker, and posts a formatted Slack alert to the sales channel — typically end-to-end in under 10 seconds.",
+  "result": "Every new lead is scored, tagged in HubSpot, and surfaced on Slack before a rep even opens the CRM. Manual qualification time dropped to zero. Google Sheets gives the team a portable view outside HubSpot with full AI reasoning captured.",
+  "metrics": [
+    { "label": "Qualification time", "value": "15 min → 0" },
+    { "label": "HubSpot sync", "value": "Bidirectional" },
+    { "label": "AI model", "value": "Claude Haiku 4.5" }
+  ],
+  "images": [
+    { "src": "img/n8n-workflow.png", "caption": "n8n workflow: HubSpot Trigger → Claude AI → HubSpot Update → Sheets → Slack" },
+    { "src": "img/hubspot-contact.png", "caption": "HubSpot contact with AI score and tags written back automatically" },
+    { "src": "img/google-sheets-log.png", "caption": "Google Sheets pipeline tracker with AI qualification columns" },
+    { "src": "img/slack-notification.png", "caption": "Slack alert with AI-generated lead summary and recommended action" }
+  ],
+  "repoPath": "n8n/hubspot-crm-sync",
+  "order": 6
+}

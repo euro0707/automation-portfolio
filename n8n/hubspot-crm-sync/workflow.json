@@ -1,0 +1,288 @@
+{
+  "name": "HubSpot CRM Contact Qualifier",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hubspot-contact",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "HubSpot Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "hubspot-contact-qualifier"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "get",
+        "contactId": "={{ $json.body[0].objectId }}",
+        "additionalFields": {
+          "properties": "firstname,lastname,email,company,jobtitle,phone,lifecyclestage,hs_lead_status,createdate"
+        }
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "hubspot-cred-1",
+          "name": "HubSpot Private App"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-contact-id",
+              "name": "contactId",
+              "value": "={{ $json.vid ?? $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-first-name",
+              "name": "firstName",
+              "value": "={{ $json.properties.firstname?.value ?? $json.properties.firstname ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-last-name",
+              "name": "lastName",
+              "value": "={{ $json.properties.lastname?.value ?? $json.properties.lastname ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-email",
+              "name": "email",
+              "value": "={{ $json.properties.email?.value ?? $json.properties.email ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-company",
+              "name": "company",
+              "value": "={{ $json.properties.company?.value ?? $json.properties.company ?? 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-title",
+              "name": "jobTitle",
+              "value": "={{ $json.properties.jobtitle?.value ?? $json.properties.jobtitle ?? 'Unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-phone",
+              "name": "phone",
+              "value": "={{ $json.properties.phone?.value ?? $json.properties.phone ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-lifecycle",
+              "name": "lifecycleStage",
+              "value": "={{ $json.properties.lifecyclestage?.value ?? $json.properties.lifecyclestage ?? 'lead' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-prompt",
+              "name": "claudePrompt",
+              "value": "=You are a B2B lead qualification expert. Analyze the following contact and return a JSON object with these exact fields:\n- lead_score: integer 1-10 (10 = highest value)\n- category: one of [Enterprise, SMB, Individual, Agency]\n- priority: one of [High, Medium, Low]\n- summary: one concise sentence explaining the qualification rationale\n- recommended_action: one of [Schedule Call, Email Follow-up, Nurture, Disqualify]\n\nContact Profile:\n- Name: {{ $json.properties.firstname?.value ?? $json.properties.firstname ?? '' }} {{ $json.properties.lastname?.value ?? $json.properties.lastname ?? '' }}\n- Email: {{ $json.properties.email?.value ?? $json.properties.email ?? 'unknown' }}\n- Company: {{ $json.properties.company?.value ?? $json.properties.company ?? 'unknown' }}\n- Job Title: {{ $json.properties.jobtitle?.value ?? $json.properties.jobtitle ?? 'unknown' }}\n- Lifecycle Stage: {{ $json.properties.lifecyclestage?.value ?? $json.properties.lifecyclestage ?? 'lead' }}\n\nReturn ONLY valid JSON, no markdown, no explanation.",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000003",
+      "name": "Prepare Claude Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "x-api-key", "value": "={{ $env.CLAUDE_API_KEY }}" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 256, messages: [{ role: 'user', content: $json.claudePrompt }] }) }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000004",
+      "name": "Claude AI — Score & Classify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.item.json.content[0].text.trim();\nlet ai;\ntry {\n  ai = JSON.parse(raw);\n} catch (e) {\n  // Fallback if Claude wraps in markdown code block\n  const match = raw.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\n  if (!match) throw new Error('Claude returned non-JSON: ' + raw.slice(0, 200));\n  ai = JSON.parse(match[1]);\n}\n\nconst prev = $('Prepare Claude Prompt').item.json;\n\nreturn [{\n  json: {\n    contactId:         prev.contactId,\n    firstName:         prev.firstName,\n    lastName:          prev.lastName,\n    email:             prev.email,\n    company:           prev.company,\n    jobTitle:          prev.jobTitle,\n    phone:             prev.phone,\n    lifecycleStage:    prev.lifecycleStage,\n    leadScore:         Number(ai.lead_score),\n    category:          String(ai.category),\n    priority:          String(ai.priority),\n    summary:           String(ai.summary),\n    recommendedAction: String(ai.recommended_action),\n    timestamp:         new Date().toISOString()\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000005",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "update",
+        "contactId": "={{ $json.contactId }}",
+        "updateFields": {
+          "customPropertiesUi": {
+            "customPropertiesValues": [
+              { "property": "ai_lead_score",         "value": "={{ String($json.leadScore) }}" },
+              { "property": "ai_category",           "value": "={{ $json.category }}" },
+              { "property": "ai_priority",           "value": "={{ $json.priority }}" },
+              { "property": "ai_summary",            "value": "={{ $json.summary }}" },
+              { "property": "ai_recommended_action", "value": "={{ $json.recommendedAction }}" }
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000006",
+      "name": "Update HubSpot Contact",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [1340, 300],
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "hubspot-cred-1",
+          "name": "HubSpot Private App"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Pipeline",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp":          "={{ $('Parse AI Response').item.json.timestamp }}",
+            "Contact ID":         "={{ $('Parse AI Response').item.json.contactId }}",
+            "First Name":         "={{ $('Parse AI Response').item.json.firstName }}",
+            "Last Name":          "={{ $('Parse AI Response').item.json.lastName }}",
+            "Email":              "={{ $('Parse AI Response').item.json.email }}",
+            "Company":            "={{ $('Parse AI Response').item.json.company }}",
+            "Job Title":          "={{ $('Parse AI Response').item.json.jobTitle }}",
+            "Phone":              "={{ $('Parse AI Response').item.json.phone }}",
+            "Lifecycle Stage":    "={{ $('Parse AI Response').item.json.lifecycleStage }}",
+            "Lead Score":         "={{ $('Parse AI Response').item.json.leadScore }}",
+            "Category":           "={{ $('Parse AI Response').item.json.category }}",
+            "Priority":           "={{ $('Parse AI Response').item.json.priority }}",
+            "Summary":            "={{ $('Parse AI Response').item.json.summary }}",
+            "Recommended Action": "={{ $('Parse AI Response').item.json.recommendedAction }}"
+          }
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000007",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1560, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred-1",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: ':bell: *New Lead Qualified*\\n\\n*Name:* ' + $('Parse AI Response').item.json.firstName + ' ' + $('Parse AI Response').item.json.lastName + '\\n*Company:* ' + $('Parse AI Response').item.json.company + '\\n*Email:* ' + $('Parse AI Response').item.json.email + '\\n*Title:* ' + $('Parse AI Response').item.json.jobTitle + '\\n\\n*AI Score:* ' + $('Parse AI Response').item.json.leadScore + '/10 — ' + $('Parse AI Response').item.json.priority + ' Priority\\n*Category:* ' + $('Parse AI Response').item.json.category + '\\n*Summary:* ' + $('Parse AI Response').item.json.summary + '\\n*Action:* ' + $('Parse AI Response').item.json.recommendedAction + '\\n\\n<https://app.hubspot.com/contacts/' + $('Parse AI Response').item.json.contactId + '|View in HubSpot>' }) }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0008-0008-0008-000000000008",
+      "name": "Slack — Sales Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "HubSpot Webhook": {
+      "main": [
+        [{ "node": "Get Contact Details", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [{ "node": "Prepare Claude Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prepare Claude Prompt": {
+      "main": [
+        [{ "node": "Claude AI — Score & Classify", "type": "main", "index": 0 }]
+      ]
+    },
+    "Claude AI — Score & Classify": {
+      "main": [
+        [{ "node": "Parse AI Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [{ "node": "Update HubSpot Contact", "type": "main", "index": 0 }]
+      ]
+    },
+    "Update HubSpot Contact": {
+      "main": [
+        [{ "node": "Log to Google Sheets", "type": "main", "index": 0 }]
+      ]
+    },
+    "Log to Google Sheets": {
+      "main": [
+        [{ "node": "Slack — Sales Alert", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "id": "hubspot-crm-qualifier-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "n8nVersion": "1.80.0"
+  }
+}

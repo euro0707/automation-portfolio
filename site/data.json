@@ -1,0 +1,273 @@
+{
+  "generatedAt": "2026-04-25T21:10:13.910Z",
+  "count": 6,
+  "projects": [
+    {
+      "slug": "daily-report-automation",
+      "title": "Daily Report Automation",
+      "category": "Quick Win",
+      "tool": "Google Apps Script",
+      "tags": [
+        "GAS",
+        "Google Sheets",
+        "Gmail",
+        "Bilingual JP/EN"
+      ],
+      "problem": "Managers spent 30+ minutes every morning compiling daily sales reports from spreadsheets by hand — copy-pasting rows, calculating totals, and formatting emails.",
+      "solution": "A time-triggered Google Apps Script that auto-detects bilingual column headers (English & Japanese), aggregates KPIs by category/status, and delivers a mobile-friendly HTML report at 7 AM. Includes error logging and email alerts on failure.",
+      "result": "Saves 2+ hours per week with zero manual intervention. Works out-of-the-box with existing Japanese or English spreadsheets — no schema migration required.",
+      "metrics": [
+        {
+          "label": "Time saved",
+          "value": "2+ hrs/week"
+        },
+        {
+          "label": "Manual steps",
+          "value": "0"
+        },
+        {
+          "label": "Languages",
+          "value": "JP + EN"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/daily-report-automation/email-preview.png",
+          "caption": "Auto-generated HTML summary delivered to inbox at 7 AM daily"
+        }
+      ],
+      "repoPath": "gas/01_daily-report-automation",
+      "order": 1
+    },
+    {
+      "slug": "form-to-sheet-notify",
+      "title": "Form → Sheet → Email Notification",
+      "category": "Quick Win",
+      "tool": "Google Apps Script",
+      "tags": [
+        "GAS",
+        "Google Forms",
+        "Google Sheets",
+        "Gmail"
+      ],
+      "problem": "Inquiries from contact forms went unanswered for hours because no one was monitoring the spreadsheet, and there was no auto-reply for submitters.",
+      "solution": "A form-submit trigger that logs every response to Google Sheets, notifies the admin with full context and a direct sheet link, and sends an instant branded auto-reply to the submitter — all with zero external services.",
+      "result": "Response time dropped from hours to seconds. Every lead is tracked, confirmed, and visible to the team in real time. Pure Google Workspace stack — no subscriptions required.",
+      "metrics": [
+        {
+          "label": "Response time",
+          "value": "< 5 sec"
+        },
+        {
+          "label": "External services",
+          "value": "0"
+        },
+        {
+          "label": "Emails per submission",
+          "value": "2"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/form-to-sheet-notify/form.png",
+          "caption": "Public Google Form for customer inquiries"
+        },
+        {
+          "src": "img/form-to-sheet-notify/email.png",
+          "caption": "Instant admin notification with inquiry details"
+        },
+        {
+          "src": "img/form-to-sheet-notify/sheet.png",
+          "caption": "Automatic logging with status column for tracking"
+        }
+      ],
+      "repoPath": "gas/02_form-to-sheet-notify",
+      "order": 2
+    },
+    {
+      "slug": "invoice-generator",
+      "title": "Invoice Generator — Sheet to PDF to Client",
+      "category": "Workflow Build",
+      "tool": "Google Apps Script",
+      "tags": [
+        "GAS",
+        "Google Docs",
+        "Google Drive",
+        "PDF",
+        "Gmail"
+      ],
+      "problem": "Creating monthly invoices was a 10-step manual process: copy template, edit fields, calculate tax, export PDF, save to Drive, attach to email, update spreadsheet status. Error-prone and time-consuming.",
+      "solution": "An end-to-end workflow: reads invoice data from Sheets, clones a Google Docs template with placeholder replacement, exports to PDF, saves to a dedicated Drive folder, emails the client with the PDF attached, and marks the row 'Sent' — all in one click or automated batch.",
+      "result": "10-step manual process reduced to a single function call. Batch-processes all pending invoices at once. Complete audit trail in the spreadsheet.",
+      "metrics": [
+        {
+          "label": "Manual steps",
+          "value": "10 → 1"
+        },
+        {
+          "label": "Time per invoice",
+          "value": "~5 min → < 10 sec"
+        },
+        {
+          "label": "Audit trail",
+          "value": "Full"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/invoice-generator/invoice_pdf.png",
+          "caption": "Generated PDF invoice from Google Docs template"
+        },
+        {
+          "src": "img/invoice-generator/email.png",
+          "caption": "Client email with invoice PDF attached"
+        },
+        {
+          "src": "img/invoice-generator/sheet.png",
+          "caption": "Spreadsheet row auto-updated to 'Sent' status"
+        }
+      ],
+      "repoPath": "gas/03_invoice-generator",
+      "order": 3
+    },
+    {
+      "slug": "external-api-notify",
+      "title": "Multi-Channel Alert Router",
+      "category": "Workflow Build",
+      "tool": "Google Apps Script",
+      "tags": [
+        "GAS",
+        "Slack",
+        "LINE",
+        "Webhook",
+        "API Integration"
+      ],
+      "problem": "Teams missed critical spreadsheet updates because email was too slow for urgent alerts, and there was no easy way to push notifications to multiple channels simultaneously (Slack for ops, LINE for mobile, webhook for downstream automation).",
+      "solution": "A configurable GAS router that fires on spreadsheet edit and fans out notifications to Slack (rich attachments), LINE Notify (mobile push), and any generic webhook (Zapier, Make, n8n, or custom APIs). One script, three channels, unlimited endpoints.",
+      "result": "Real-time multi-channel alerts with no external middleware. Easily extensible — adding a new channel is a single function call. Proven integration with downstream automation platforms.",
+      "metrics": [
+        {
+          "label": "Channels supported",
+          "value": "3+"
+        },
+        {
+          "label": "Latency",
+          "value": "< 2 sec"
+        },
+        {
+          "label": "Middleware required",
+          "value": "None"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/external-api-notify/webhook.png",
+          "caption": "Webhook payload received downstream (verified via webhook.site)"
+        },
+        {
+          "src": "img/external-api-notify/gas_log.png",
+          "caption": "Execution log showing successful multi-channel dispatch"
+        }
+      ],
+      "repoPath": "gas/04_external-api-notify",
+      "order": 4
+    },
+    {
+      "slug": "ai-lead-triage",
+      "title": "AI Lead Triage Pipeline",
+      "category": "AI Integration",
+      "tool": "n8n + Claude AI",
+      "tags": [
+        "n8n",
+        "Claude API",
+        "Google Sheets",
+        "Slack",
+        "Docker"
+      ],
+      "problem": "Sales teams wasted hours reading and categorizing inbound inquiries manually, causing high-priority leads to sit in the queue behind low-value ones. Simple keyword rules missed context and intent.",
+      "solution": "A self-hosted n8n workflow (Docker) that receives form submissions via webhook, sends them to Claude Haiku for classification (category, priority, summary, recommended action), logs structured results to Google Sheets, and pushes real-time Slack alerts with AI-generated context.",
+      "result": "Zero-touch lead qualification. High-priority leads surface to Slack within seconds with AI-written summaries. Fully self-hosted — no SaaS subscription, full data ownership.",
+      "metrics": [
+        {
+          "label": "Triage time",
+          "value": "Manual → 0"
+        },
+        {
+          "label": "AI model",
+          "value": "Claude Haiku 4.5"
+        },
+        {
+          "label": "Hosting",
+          "value": "Self-hosted (Docker)"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/ai-lead-triage/n8n-workflow.png",
+          "caption": "n8n workflow: Webhook → Claude AI → Google Sheets → Slack"
+        },
+        {
+          "src": "img/ai-lead-triage/google-sheets-log.png",
+          "caption": "Structured lead log with AI classification columns"
+        },
+        {
+          "src": "img/ai-lead-triage/slack-notification.png",
+          "caption": "Real-time Slack alert with AI-generated summary"
+        }
+      ],
+      "repoPath": "n8n/05_ai-lead-triage",
+      "order": 5
+    },
+    {
+      "slug": "hubspot-crm-sync",
+      "title": "HubSpot CRM Contact Qualifier",
+      "category": "CRM Integration",
+      "tool": "n8n + HubSpot + Claude AI",
+      "tags": [
+        "n8n",
+        "HubSpot CRM",
+        "Claude API",
+        "Google Sheets",
+        "Slack",
+        "Docker"
+      ],
+      "problem": "Sales reps spent 15+ minutes per lead manually reviewing new HubSpot contacts, assigning scores by gut feel, and copy-pasting summaries into Slack — with no consistent qualification criteria and no audit trail outside CRM.",
+      "solution": "A self-hosted n8n workflow (Docker) triggered by HubSpot's contact.creation webhook. It fetches the full contact record, sends it to Claude Haiku for lead scoring (1–10), category, priority, and recommended action, writes the AI output back to HubSpot as custom properties, appends a structured row to a Google Sheets pipeline tracker, and posts a formatted Slack alert to the sales channel — typically end-to-end in under 10 seconds.",
+      "result": "Every new lead is scored, tagged in HubSpot, and surfaced on Slack before a rep even opens the CRM. Manual qualification time dropped to zero. Google Sheets gives the team a portable view outside HubSpot with full AI reasoning captured.",
+      "metrics": [
+        {
+          "label": "Qualification time",
+          "value": "15 min → 0"
+        },
+        {
+          "label": "HubSpot sync",
+          "value": "Bidirectional"
+        },
+        {
+          "label": "AI model",
+          "value": "Claude Haiku 4.5"
+        }
+      ],
+      "images": [
+        {
+          "src": "img/hubspot-crm-sync/n8n-workflow.png",
+          "caption": "n8n workflow: HubSpot Trigger → Claude AI → HubSpot Update → Sheets → Slack"
+        },
+        {
+          "src": "img/hubspot-crm-sync/hubspot-contact.png",
+          "caption": "HubSpot contact with AI score and tags written back automatically"
+        },
+        {
+          "src": "img/hubspot-crm-sync/google-sheets-log.png",
+          "caption": "Google Sheets pipeline tracker with AI qualification columns"
+        },
+        {
+          "src": "img/hubspot-crm-sync/slack-notification.png",
+          "caption": "Slack alert with AI-generated lead summary and recommended action"
+        }
+      ],
+      "repoPath": "n8n/06_hubspot-crm-sync",
+      "order": 6
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-rss-automation
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_WEBHOOK_URL=http://localhost:5678/
+      - N8N_GENERIC_TIMEZONE=Asia/Tokyo
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+    volumes:
+      - ./.n8n:/home/node/.n8n
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+  dify:
+    image: langgenius/dify-web:latest
+    container_name: dify-rss-automation
+    ports:
+      - "8000:3000"
+    environment:
+      - FLASK_ENV=production
+      - DEBUG=false
+      - SECRET_KEY=${DIFY_SECRET_KEY:-changeme-secret-key-change-in-production}
+      - DEPLOY_ENV=docker
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@dify.local}
+      - TZ=Asia/Tokyo
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./dify_data/storage:/app/storage
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+  dify-api:
+    image: langgenius/dify-api:latest
+    container_name: dify-api
+    ports:
+      - "8001:5001"
+    environment:
+      - FLASK_ENV=production
+      - DEBUG=false
+      - SECRET_KEY=${DIFY_SECRET_KEY:-changeme-secret-key-change-in-production}
+      - DEPLOY_ENV=docker
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=dify
+      - DB_PASSWORD=${DB_PASSWORD:-difypassword}
+      - DB_NAME=dify
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - TZ=Asia/Tokyo
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./dify_data/storage:/app/storage
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: dify-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./dify_data/redis:/data
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: dify-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dify
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-difypassword}
+      - POSTGRES_DB=dify
+    volumes:
+      - ./dify_data/postgres:/var/lib/postgresql/data
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+networks:
+  automation-network:
+    driver: bridge

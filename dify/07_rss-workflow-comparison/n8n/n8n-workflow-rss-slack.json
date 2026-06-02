@@ -1,0 +1,129 @@
+{
+  "name": "RSS Feed to Slack Daily Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "6e364635-af16-4623-bc0e-aba3a5accd51",
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://news.ycombinator.com/rss",
+        "options": {}
+      },
+      "id": "79b007ce-d37c-4970-abcf-76c38be16728",
+      "name": "Read RSS Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "= {{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "76631041-9edb-4744-85da-b4cf85d8472d",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n  const text = items.map((item, i) =>\n    `${i + 1}. *${item.json.title}*\\n<${item.json.link}|Read\n  More>`\n  ).join('\\n\\n');\n\n  return [{ json: { text: `📰 *Daily RSS Digest*\\n\\n${text}` }\n  }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "31aa4999-9271-4e2a-b323-d8930910a633",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Read RSS Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RSS Feed": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8ac757a9-6d7e-4f08-9cc8-4b55b844e687",
+  "meta": {
+    "instanceId": "4142546532d6746b7dc662e840bb013b223daee128d777812f6c92f2803dbdde"
+  },
+  "id": "ihpFrj2Q5lavUjzz",
+  "tags": []
+}

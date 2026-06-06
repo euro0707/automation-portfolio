@@ -1,0 +1,18 @@
+{
+  "slug": "rss-slack-ai-digest-dify",
+  "title": "AI RSS Digest — Dify, benchmarked against n8n",
+  "category": "AI Integration",
+  "tool": "Dify + Claude AI",
+  "tags": ["Dify", "Claude API", "LLM Workflow", "RSS", "Slack", "Docker", "Self-hosted"],
+  "problem": "Teams drown in RSS/news feeds and waste time scanning for what matters. Worse, when building such an automation, it's unclear which platform to use — a no-code flow tool like n8n, or an LLM-native platform like Dify. Picking wrong means rework.",
+  "solution": "Built the same 'RSS → AI digest → Slack' pipeline twice. The Dify (self-hosted, Docker) version fetches the feed via a Python Code node through an SSRF proxy, classifies and summarizes up to 5 articles with Claude Haiku into one-line, category-tagged output, and posts to Slack. Hardened with per-attempt timeouts + retry to absorb sandbox/proxy hiccups. Then implemented the n8n equivalent and documented the trade-offs.",
+  "result": "Automated, category-tagged Slack digests with zero manual triage. The real deliverable is a clear selection guide — 'plumbing → n8n, AI enrichment → Dify' — so clients get the right tool for their requirement, not just a build. Demonstrates tool-neutral judgment across both platforms.",
+  "metrics": [
+    { "label": "AI model", "value": "Claude Haiku 4.5" },
+    { "label": "Platforms compared", "value": "Dify vs n8n" },
+    { "label": "Hosting", "value": "Self-hosted (Docker)" }
+  ],
+  "images": [],
+  "repoPath": "dify/07_rss-workflow-comparison",
+  "order": 7
+}

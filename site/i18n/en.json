@@ -39,7 +39,7 @@
   },
   "about": {
     "heading": "About",
-    "body": "I'm an automation engineer focused on practical, production-ready solutions. My code ships with error handling, logging, and fallback paths — the kind of things that matter at 3 AM when a workflow fails. I work fluently in both English and Japanese, and I specialize in the Google Workspace ecosystem combined with modern AI tools like Claude."
+    "body": "I'm an automation engineer focused on practical, production-ready solutions. My code ships with error handling, logging, and fallback paths — the kind of things that matter at 3 AM when a workflow fails. I work across Google Apps Script, n8n, and Dify — and I'll help you pick the right one for your requirement, not just build with whatever's familiar. Fluent in English and Japanese, with a focus on the Google Workspace ecosystem combined with modern AI tools like Claude."
   },
   "contact": {
     "heading": "Let's Work Together",

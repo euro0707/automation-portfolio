@@ -18,6 +18,6 @@
     { "src": "img/google-sheets-log.png", "caption": "Google Sheets pipeline tracker with AI qualification columns" },
     { "src": "img/slack-notification.png", "caption": "Slack alert with AI-generated lead summary and recommended action" }
   ],
-  "repoPath": "n8n/hubspot-crm-sync",
+  "repoPath": "n8n/06_hubspot-crm-sync",
   "order": 6
 }

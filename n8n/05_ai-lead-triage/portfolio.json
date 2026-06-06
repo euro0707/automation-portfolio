@@ -17,6 +17,6 @@
     { "src": "img/google-sheets-log.png", "caption": "Structured lead log with AI classification columns" },
     { "src": "img/slack-notification.png", "caption": "Real-time Slack alert with AI-generated summary" }
   ],
-  "repoPath": "n8n/lead-triage",
+  "repoPath": "n8n/05_ai-lead-triage",
   "order": 5
 }

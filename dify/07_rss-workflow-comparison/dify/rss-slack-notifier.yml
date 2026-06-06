@@ -1,0 +1,249 @@
+app:
+  description: RSSフィードを取得し、Claude Haikuで分類・要約してSlackに通知するワークフロー
+  icon: 🔔
+  icon_background: '#E0F2FE'
+  mode: workflow
+  name: RSS Slack Notifier
+kind: app
+version: 0.1.3
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          sourceType: start
+          targetType: code
+        id: start-to-rss
+        source: start
+        sourceHandle: source
+        target: rss_fetch
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: code
+          targetType: llm
+        id: rss-to-llm
+        source: rss_fetch
+        sourceHandle: source
+        target: llm_classify
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: llm
+          targetType: http-request
+        id: llm-to-slack
+        source: llm_classify
+        sourceHandle: source
+        target: slack_notify
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: http-request
+          targetType: end
+        id: slack-to-end
+        source: slack_notify
+        sourceHandle: source
+        target: end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          desc: ワークフロー開始
+          selected: false
+          title: 開始
+          type: start
+          variables:
+            - description: RSSフィードのURL
+              label: RSS URL
+              max_length: 256
+              options: []
+              required: true
+              type: text-input
+              variable: rss_url
+        height: 116
+        id: start
+        position:
+          x: 80
+          y: 282
+        positionAbsolute:
+          x: 80
+          y: 282
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+
+      - data:
+          code: |
+            import urllib.request
+            import ssl
+            import time
+
+            def main(rss_url: str) -> dict:
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                proxy = urllib.request.ProxyHandler({
+                    "http": "http://ssrf_proxy:3128",
+                    "https": "http://ssrf_proxy:3128",
+                })
+                opener = urllib.request.build_opener(
+                    proxy, urllib.request.HTTPSHandler(context=ctx)
+                )
+                req = urllib.request.Request(rss_url, headers={"User-Agent": "Mozilla/5.0"})
+                # Short per-attempt timeout + retry: absorbs intermittent
+                # ssrf_proxy/DNS hiccups while staying within sandbox WORKER_TIMEOUT.
+                last_error = None
+                for attempt in range(2):
+                    try:
+                        with opener.open(req, timeout=10) as resp:
+                            body = resp.read().decode("utf-8", errors="replace")
+                        return {"rss_body": body}
+                    except Exception as e:
+                        last_error = e
+                        time.sleep(0.5)
+                raise RuntimeError(f"RSS fetch failed after retries: {last_error}")
+          code_language: python3
+          desc: PythonでRSSフィードを取得
+          outputs:
+            rss_body:
+              type: string
+          selected: false
+          title: RSS取得
+          type: code
+          variables:
+            - value_selector:
+                - start
+                - rss_url
+              variable: rss_url
+        height: 98
+        id: rss_fetch
+        position:
+          x: 400
+          y: 258
+        positionAbsolute:
+          x: 400
+          y: 258
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+
+      - data:
+          context:
+            enabled: false
+            variable_selector: []
+          desc: Claude HaikuでRSS XMLを解析・分類・要約（1行出力）
+          memory:
+            enabled: false
+            window:
+              enabled: false
+              size: 10
+          model:
+            completion_params:
+              temperature: 0.3
+              max_tokens: 500
+            mode: chat
+            name: claude-haiku-4-5-20251001
+            provider: anthropic
+          prompt_template:
+            - id: system-prompt
+              role: system
+              edition_type: basic
+              text: "あなたはRSSフィードを解析してニュースを分類・要約するアシスタントです。\nRSS XMLから記事を最大5件抽出し、以下のカテゴリで分類してください：AI/ML, Web開発, クラウド・インフラ, セキュリティ, ビジネス・スタートアップ, その他\n\n重要：出力は必ず1行で、記事間は「 | 」で区切ること。改行は絶対に使わないこと。\n出力形式: [カテゴリ] タイトル — 要約 | [カテゴリ] タイトル — 要約"
+            - id: user-prompt
+              role: user
+              edition_type: basic
+              text: "以下のRSS XMLを解析して記事を分類・要約してください（1行で出力）：\n\n{{#rss_fetch.rss_body#}}"
+          selected: false
+          title: Haiku分類
+          type: llm
+          variables: []
+          vision:
+            enabled: false
+        height: 98
+        id: llm_classify
+        position:
+          x: 720
+          y: 258
+        positionAbsolute:
+          x: 720
+          y: 258
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          body:
+            data: '{"text": "RSS Update: {{#llm_classify.text#}}"}'
+            type: json
+          desc: Slack Webhookに通知を送信
+          headers: 'Content-Type: application/json'
+          method: post
+          params: ''
+          selected: false
+          timeout:
+            connect: 10
+            max_connect_timeout: 300
+            max_read_timeout: 600
+            max_write_timeout: 600
+            read: 60
+            write: 20
+          title: Slack通知
+          type: http-request
+          url: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL'
+          variables: []
+        height: 154
+        id: slack_notify
+        position:
+          x: 1040
+          y: 230
+        positionAbsolute:
+          x: 1040
+          y: 230
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+
+      - data:
+          desc: ''
+          outputs:
+            - type: string
+              value_selector:
+                - llm_classify
+                - text
+              variable: result
+          selected: false
+          title: 終了
+          type: end
+        height: 54
+        id: end
+        position:
+          x: 1360
+          y: 282
+        positionAbsolute:
+          x: 1360
+          y: 282
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244

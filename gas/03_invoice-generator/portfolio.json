@@ -1,0 +1,22 @@
+{
+  "slug": "invoice-generator",
+  "title": "Invoice Generator — Sheet to PDF to Client",
+  "category": "Workflow Build",
+  "tool": "Google Apps Script",
+  "tags": ["GAS", "Google Docs", "Google Drive", "PDF", "Gmail"],
+  "problem": "Creating monthly invoices was a 10-step manual process: copy template, edit fields, calculate tax, export PDF, save to Drive, attach to email, update spreadsheet status. Error-prone and time-consuming.",
+  "solution": "An end-to-end workflow: reads invoice data from Sheets, clones a Google Docs template with placeholder replacement, exports to PDF, saves to a dedicated Drive folder, emails the client with the PDF attached, and marks the row 'Sent' — all in one click or automated batch.",
+  "result": "10-step manual process reduced to a single function call. Batch-processes all pending invoices at once. Complete audit trail in the spreadsheet.",
+  "metrics": [
+    { "label": "Manual steps", "value": "10 → 1" },
+    { "label": "Time per invoice", "value": "~5 min → < 10 sec" },
+    { "label": "Audit trail", "value": "Full" }
+  ],
+  "images": [
+    { "src": "img/invoice_pdf.png", "caption": "Generated PDF invoice from Google Docs template" },
+    { "src": "img/email.png", "caption": "Client email with invoice PDF attached" },
+    { "src": "img/sheet.png", "caption": "Spreadsheet row auto-updated to 'Sent' status" }
+  ],
+  "repoPath": "gas/03_invoice-generator",
+  "order": 3
+}

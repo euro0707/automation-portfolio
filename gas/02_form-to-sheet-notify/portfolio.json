@@ -1,0 +1,22 @@
+{
+  "slug": "form-to-sheet-notify",
+  "title": "Form → Sheet → Email Notification",
+  "category": "Quick Win",
+  "tool": "Google Apps Script",
+  "tags": ["GAS", "Google Forms", "Google Sheets", "Gmail"],
+  "problem": "Inquiries from contact forms went unanswered for hours because no one was monitoring the spreadsheet, and there was no auto-reply for submitters.",
+  "solution": "A form-submit trigger that logs every response to Google Sheets, notifies the admin with full context and a direct sheet link, and sends an instant branded auto-reply to the submitter — all with zero external services.",
+  "result": "Response time dropped from hours to seconds. Every lead is tracked, confirmed, and visible to the team in real time. Pure Google Workspace stack — no subscriptions required.",
+  "metrics": [
+    { "label": "Response time", "value": "< 5 sec" },
+    { "label": "External services", "value": "0" },
+    { "label": "Emails per submission", "value": "2" }
+  ],
+  "images": [
+    { "src": "img/form.png", "caption": "Public Google Form for customer inquiries" },
+    { "src": "img/email.png", "caption": "Instant admin notification with inquiry details" },
+    { "src": "img/sheet.png", "caption": "Automatic logging with status column for tracking" }
+  ],
+  "repoPath": "gas/02_form-to-sheet-notify",
+  "order": 2
+}

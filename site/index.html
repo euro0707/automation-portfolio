@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automation Portfolio — I eliminate wasted work.</title>
+  <meta name="description" content="Business automation with Google Apps Script, n8n, and Claude AI. Bilingual English & Japanese support." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <h1 class="hero__title" data-i18n="hero.tagline">I eliminate wasted work.</h1>
+      <p class="hero__lead" data-i18n="hero.subtagline">By building automation that runs quietly in the background —</p>
+      <p class="hero__desc" data-i18n="hero.description">so your team can focus on what actually matters.</p>
+      <p class="hero__stack">Google Apps Script &nbsp;·&nbsp; n8n &nbsp;·&nbsp; Claude AI &nbsp;·&nbsp; <span data-i18n="hero.bilingual">Bilingual EN/JP</span></p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="https://www.upwork.com/freelancers/~010a200fa6f6b78181" target="_blank" rel="noopener" data-i18n="hero.ctaPrimary">Hire on Upwork</a>
+        <a class="btn btn--ghost" href="#cases" data-i18n="hero.ctaSecondary">View Case Studies</a>
+      </div>
+      <ul class="hero__chips">
+        <li>Google Apps Script</li>
+        <li>n8n</li>
+        <li>Claude AI</li>
+        <li>Google Workspace</li>
+        <li>API Integrations</li>
+        <li>Docker</li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Services -->
+  <section class="services">
+    <div class="container">
+      <h2 class="section__heading" data-i18n="services.heading">What I Build</h2>
+      <div class="services__grid" id="services"></div>
+    </div>
+  </section>
+
+  <!-- Case Studies -->
+  <section class="cases" id="cases">
+    <div class="container">
+      <h2 class="section__heading" data-i18n="cases.heading">Case Studies</h2>
+      <p class="section__subheading" data-i18n="cases.subheading">Real automations, real outcomes.</p>
+      <div class="cases__grid" id="projects"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about">
+    <div class="container container--narrow">
+      <h2 class="section__heading" data-i18n="about.heading">About</h2>
+      <p class="about__body" data-i18n="about.body">
+        I'm an automation engineer focused on practical, production-ready solutions.
+        My code ships with error handling, logging, and fallback paths — the kind of things
+        that matter at 3 AM when a workflow fails. I work fluently in both English and Japanese,
+        and I specialize in the Google Workspace ecosystem combined with modern AI tools like Claude.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact">
+    <div class="container container--narrow">
+      <h2 class="section__heading" data-i18n="contact.heading">Let's Work Together</h2>
+      <p class="contact__body" data-i18n="contact.body">
+        Available for freelance projects on Upwork. Bilingual support for international and Japanese teams.
+      </p>
+      <div class="contact__links">
+        <a class="btn btn--primary" href="https://www.upwork.com/freelancers/~010a200fa6f6b78181" target="_blank" rel="noopener" data-i18n="contact.upwork">Hire on Upwork</a>
+        <a class="btn btn--ghost" href="https://github.com/euro0707/automation-portfolio" target="_blank" rel="noopener" data-i18n="contact.github">GitHub</a>
+        <a class="btn btn--ghost" href="#" target="_blank" rel="noopener" id="linkedin-link" data-i18n="contact.linkedin">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p data-i18n="footer.copyright">© 2026 Automation Portfolio</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" aria-label="Close">×</button>
+    <button class="lightbox__nav lightbox__nav--prev" aria-label="Previous">‹</button>
+    <button class="lightbox__nav lightbox__nav--next" aria-label="Next">›</button>
+    <figure class="lightbox__figure">
+      <img class="lightbox__img" alt="" />
+      <figcaption class="lightbox__caption"></figcaption>
+    </figure>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

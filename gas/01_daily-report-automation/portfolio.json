@@ -1,0 +1,20 @@
+{
+  "slug": "daily-report-automation",
+  "title": "Daily Report Automation",
+  "category": "Quick Win",
+  "tool": "Google Apps Script",
+  "tags": ["GAS", "Google Sheets", "Gmail", "Bilingual JP/EN"],
+  "problem": "Managers spent 30+ minutes every morning compiling daily sales reports from spreadsheets by hand — copy-pasting rows, calculating totals, and formatting emails.",
+  "solution": "A time-triggered Google Apps Script that auto-detects bilingual column headers (English & Japanese), aggregates KPIs by category/status, and delivers a mobile-friendly HTML report at 7 AM. Includes error logging and email alerts on failure.",
+  "result": "Saves 2+ hours per week with zero manual intervention. Works out-of-the-box with existing Japanese or English spreadsheets — no schema migration required.",
+  "metrics": [
+    { "label": "Time saved", "value": "2+ hrs/week" },
+    { "label": "Manual steps", "value": "0" },
+    { "label": "Languages", "value": "JP + EN" }
+  ],
+  "images": [
+    { "src": "img/email-preview.png", "caption": "Auto-generated HTML summary delivered to inbox at 7 AM daily" }
+  ],
+  "repoPath": "gas/01_daily-report-automation",
+  "order": 1
+}

@@ -1,0 +1,22 @@
+{
+  "slug": "ai-lead-triage",
+  "title": "AI Lead Triage Pipeline",
+  "category": "AI Integration",
+  "tool": "n8n + Claude AI",
+  "tags": ["n8n", "Claude API", "Google Sheets", "Slack", "Docker"],
+  "problem": "Sales teams wasted hours reading and categorizing inbound inquiries manually, causing high-priority leads to sit in the queue behind low-value ones. Simple keyword rules missed context and intent.",
+  "solution": "A self-hosted n8n workflow (Docker) that receives form submissions via webhook, sends them to Claude Haiku for classification (category, priority, summary, recommended action), logs structured results to Google Sheets, and pushes real-time Slack alerts with AI-generated context.",
+  "result": "Zero-touch lead qualification. High-priority leads surface to Slack within seconds with AI-written summaries. Fully self-hosted — no SaaS subscription, full data ownership.",
+  "metrics": [
+    { "label": "Triage time", "value": "Manual → 0" },
+    { "label": "AI model", "value": "Claude Haiku 4.5" },
+    { "label": "Hosting", "value": "Self-hosted (Docker)" }
+  ],
+  "images": [
+    { "src": "img/n8n-workflow.png", "caption": "n8n workflow: Webhook → Claude AI → Google Sheets → Slack" },
+    { "src": "img/google-sheets-log.png", "caption": "Structured lead log with AI classification columns" },
+    { "src": "img/slack-notification.png", "caption": "Real-time Slack alert with AI-generated summary" }
+  ],
+  "repoPath": "n8n/lead-triage",
+  "order": 5
+}

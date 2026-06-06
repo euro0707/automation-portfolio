@@ -1,0 +1,21 @@
+{
+  "slug": "external-api-notify",
+  "title": "Multi-Channel Alert Router",
+  "category": "Workflow Build",
+  "tool": "Google Apps Script",
+  "tags": ["GAS", "Slack", "LINE", "Webhook", "API Integration"],
+  "problem": "Teams missed critical spreadsheet updates because email was too slow for urgent alerts, and there was no easy way to push notifications to multiple channels simultaneously (Slack for ops, LINE for mobile, webhook for downstream automation).",
+  "solution": "A configurable GAS router that fires on spreadsheet edit and fans out notifications to Slack (rich attachments), LINE Notify (mobile push), and any generic webhook (Zapier, Make, n8n, or custom APIs). One script, three channels, unlimited endpoints.",
+  "result": "Real-time multi-channel alerts with no external middleware. Easily extensible — adding a new channel is a single function call. Proven integration with downstream automation platforms.",
+  "metrics": [
+    { "label": "Channels supported", "value": "3+" },
+    { "label": "Latency", "value": "< 2 sec" },
+    { "label": "Middleware required", "value": "None" }
+  ],
+  "images": [
+    { "src": "img/webhook.png", "caption": "Webhook payload received downstream (verified via webhook.site)" },
+    { "src": "img/gas_log.png", "caption": "Execution log showing successful multi-channel dispatch" }
+  ],
+  "repoPath": "gas/04_external-api-notify",
+  "order": 4
+}

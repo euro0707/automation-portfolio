@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "tagline": "I eliminate wasted work.",
+    "subtagline": "By building automation that runs quietly in the background —",
+    "description": "so your team can focus on what actually matters.",
+    "bilingual": "Bilingual support: English & Japanese",
+    "ctaPrimary": "Hire on Upwork",
+    "ctaSecondary": "View Case Studies"
+  },
+  "services": {
+    "heading": "What I Build",
+    "items": [
+      {
+        "name": "Quick Win",
+        "price": "$300 – $500",
+        "description": "Single-purpose automation you can deploy today. Ideal for reports, notifications, and form handling.",
+        "examples": "Daily reports · Form auto-reply · Sheet triggers"
+      },
+      {
+        "name": "Workflow Build",
+        "price": "$800 – $1,500",
+        "description": "End-to-end processes that connect multiple tools. Designed with error handling and audit trails.",
+        "examples": "Invoice generation · Multi-channel alerts · API integrations"
+      },
+      {
+        "name": "AI Integration",
+        "price": "$1,500 – $3,000",
+        "description": "Claude AI + workflow automation. Lead triage, content classification, smart routing.",
+        "examples": "Lead triage · Smart summaries · AI-assisted operations"
+      }
+    ]
+  },
+  "cases": {
+    "heading": "Case Studies",
+    "subheading": "Real automations, real outcomes.",
+    "labelProblem": "Problem",
+    "labelSolution": "Solution",
+    "labelResult": "Result"
+  },
+  "about": {
+    "heading": "About",
+    "body": "I'm an automation engineer focused on practical, production-ready solutions. My code ships with error handling, logging, and fallback paths — the kind of things that matter at 3 AM when a workflow fails. I work fluently in both English and Japanese, and I specialize in the Google Workspace ecosystem combined with modern AI tools like Claude."
+  },
+  "contact": {
+    "heading": "Let's Work Together",
+    "body": "Available for freelance projects on Upwork. Bilingual support for international and Japanese teams.",
+    "upwork": "Hire on Upwork",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "footer": {
+    "copyright": "© 2026 Automation Portfolio"
+  }
+}

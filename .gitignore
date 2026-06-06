@@ -13,3 +13,16 @@ site/img/
 
 dify/07_rss-workflow-comparison/.n8n/
 dify/07_rss-workflow-comparison/dify_data/
+
+# Personal job-hunt notes & data — not portfolio deliverables
+EXECUTION_SUMMARY.md
+TASKS.md
+VA-job-postings-list.md
+daily-job-hunt.md
+job-hunt-summary.txt
+jobs-data.json
+
+# Personal tooling — not client-facing deliverables
+upwork-job-scraper.ps1
+upwork-proposal-evaluator.md
+send-discord-notification.ps1

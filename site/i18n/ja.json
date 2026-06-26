@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "tagline": "無駄な作業をなくします。",
+    "subtagline": "バックグラウンドで静かに動く自動化を構築することで —",
+    "description": "チームが本当に重要な仕事に集中できるようにします。",
+    "bilingual": "日英バイリンガル対応",
+    "ctaPrimary": "Upworkで依頼する",
+    "ctaSecondary": "事例を見る"
+  },
+  "services": {
+    "heading": "提供サービス",
+    "items": [
+      {
+        "name": "クイックウィン",
+        "price": "$300 〜 $500",
+        "description": "今日から導入できる単機能の自動化。レポート・通知・フォーム処理に最適。",
+        "examples": "日次レポート · フォーム自動返信 · スプレッドシートトリガー"
+      },
+      {
+        "name": "ワークフロー構築",
+        "price": "$800 〜 $1,500",
+        "description": "複数ツールをつなぐエンドツーエンドのプロセス。エラー処理と監査ログ付きで設計。",
+        "examples": "請求書生成 · 多チャンネル通知 · API連携"
+      },
+      {
+        "name": "AI統合",
+        "price": "$1,500 〜 $3,000",
+        "description": "Claude AI × ワークフロー自動化。リードのトリアージ、コンテンツ分類、スマートルーティング。",
+        "examples": "リードトリアージ · スマート要約 · AI支援オペレーション"
+      }
+    ]
+  },
+  "cases": {
+    "heading": "事例紹介",
+    "subheading": "実際の自動化、実際の成果。",
+    "labelProblem": "課題",
+    "labelSolution": "解決策",
+    "labelResult": "成果"
+  },
+  "about": {
+    "heading": "自己紹介",
+    "body": "実用的でプロダクションレディなソリューションに特化した自動化エンジニアです。コードにはエラーハンドリング・ログ・フォールバックパスを組み込んでいます — ワークフローが深夜に止まったときに必要なものです。Google Apps Script・n8n・Dify を横断して対応しており、ご要件に合ったツールを選定してから構築します。英語・日本語のバイリンガル対応で、Google Workspaceエコシステムと Claude などの最新AIツールの組み合わせを得意としています。"
+  },
+  "contact": {
+    "heading": "一緒に仕事をしましょう",
+    "body": "Upworkでフリーランス案件を受け付けています。英語・日本語チームへのバイリンガル対応可能です。",
+    "upwork": "Upworkで依頼する",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "footer": {
+    "copyright": "© 2026 Automation Portfolio"
+  }
+}

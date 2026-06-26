@@ -1,43 +1,79 @@
-# Automation Portfolio
+# 07: RSS AI Digest — n8n vs Dify
 
-Google Apps Script / n8n automation projects for Upwork clients.
+Same requirement — "fetch RSS feed, summarize with AI, post to Slack" — implemented on **both n8n and Dify**, with a documented trade-off comparison.
 
-## Projects
+See [`COMPARISON.md`](COMPARISON.md) for the full analysis (Japanese).
 
-| # | Project | Description |
-|---|---------|-------------|
-| 01 | [Daily Report Automation](gas/01_daily-report-automation/) | Auto-sends HTML reports from Google Sheets by email |
-| 02 | [Form → Sheet → Notify](gas/02_form-to-sheet-notify/) | Auto-logs form submissions to Sheets and sends email notifications |
-| 03 | [Invoice Generator](gas/03_invoice-generator/) | Auto-generates PDF invoices from Google Sheets and emails them to clients |
-| 04 | [External API Notify](gas/04_external-api-notify/) | Sends real-time notifications from Google Sheets to Slack, LINE, and webhooks |
-| 05 | [AI Lead Triage (n8n)](n8n/lead-triage/) | Webhook → Claude AI analysis → Google Sheets + Slack notification pipeline |
-| 06 | [HubSpot CRM Qualifier (n8n)](n8n/hubspot-crm-sync/) | HubSpot new contact → Claude AI scoring → HubSpot update + Sheets + Slack alert |
+## What It Does
 
-## Tech Stack
+1. Fetches an RSS feed (configurable URL)
+2. Classifies and summarizes up to 5 articles using **Claude Haiku** into one-line, category-tagged output
+3. Posts the digest to **Slack**
 
-- **Automation**: Google Apps Script, n8n
-- **AI Integration**: Claude API
-- **Integrations**: Google Sheets, Slack, LINE, HubSpot, Webhook
-- **Portfolio Site**: Static site generation
+### Dify version (`dify/`)
+
+```
+Start(rss_url) → RSS Fetch(Python Code) → Claude Haiku(LLM) → Slack POST(HTTP) → End
+```
+
+- RSS is fetched in a Python Code node via `ssrf_proxy` (Dify sandbox requirement)
+- LLM node classifies articles into categories: AI/ML, Web Dev, Cloud, Security, Business, Other
+- Hardened with per-attempt timeout (10 s) + retry to absorb sandbox hiccups
+
+### n8n version (`dify/n8n-workflow-rss-slack.json`)
+
+```
+Schedule → RSS Feed(native) → Code(JS format) → Slack POST(HTTP)
+```
+
+- Native `rssFeedRead` node handles XML parsing
+- No AI processing — raw title + link digest
+
+## Platforms Compared
+
+| | n8n | Dify |
+|---|---|---|
+| Trigger | Schedule / Webhook | Manual (rss_url input) |
+| RSS parse | Native node | Python Code (manual) |
+| AI summary | ✗ | Claude Haiku |
+| Self-host complexity | Low (single container) | Medium (nginx + ssrf_proxy + sandbox) |
+
+**Rule of thumb:** pure data plumbing → n8n; AI enrichment → Dify.
+
+## Screenshots
+
+### Dify workflow canvas
+![Dify Workflow](dify/rss-slack-notifier.yml)
+
+### n8n workflow canvas
+![n8n Workflow](dify/n8n-workflow-canvas.png)
+
+### Slack output
+![Slack notification](dify/slack-rss-notification.png)
 
 ## Setup
 
+### Dify (self-hosted)
+
 ```bash
-# Install dependencies
-npm install
-
-# View project metadata
-cat gas/*/portfolio.json
-cat n8n/*/portfolio.json
+cd dify/07_rss-workflow-comparison
+docker compose up -d
 ```
 
-## File Structure
+Then import `dify/rss-slack-notifier.yml` via the Dify UI → Studio → Import DSL.
 
-```
-.
-├── gas/                 # Google Apps Script projects
-├── n8n/                 # n8n automation workflows
-├── site/                # Portfolio site (generated)
-├── scripts/             # Build/utility scripts
-└── package.json         # Node dependencies
-```
+Set your Slack webhook URL in the workflow's HTTP node before running.
+
+### n8n
+
+Import `dify/n8n-workflow-rss-slack.json` into your n8n instance.
+Set `SLACK_WEBHOOK_URL` as an n8n environment variable.
+
+## Secret Management
+
+Neither workflow stores credentials in the repository.
+
+| Tool | Method |
+|------|--------|
+| n8n | `$env.SLACK_WEBHOOK_URL` (environment variable reference) |
+| Dify | Set in Dify UI only; exported DSL contains a dummy value |

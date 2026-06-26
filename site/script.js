@@ -166,6 +166,36 @@
   }
 
   /* ------------------------------------------------------------------------
+     Language Toggle
+     ------------------------------------------------------------------------ */
+  function initLangToggle(data) {
+    const toggle = document.getElementById("lang-toggle");
+    if (!toggle) return;
+
+    function setLang(lang) {
+      localStorage.setItem("portfolio:lang", lang);
+      toggle.querySelectorAll(".lang-btn").forEach((btn) => {
+        btn.classList.toggle("lang-btn--active", btn.dataset.lang === lang);
+      });
+      document.documentElement.lang = lang;
+      loadJSON(`i18n/${lang}.json`)
+        .then((strings) => {
+          applyI18n(strings);
+          renderServices(strings.services && strings.services.items);
+          renderProjects(data.projects || [], strings.cases || {});
+          initLightbox(data.projects || []);
+        })
+        .catch((err) => console.error("[lang] failed:", err));
+    }
+
+    toggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".lang-btn");
+      if (!btn) return;
+      setLang(btn.dataset.lang);
+    });
+  }
+
+  /* ------------------------------------------------------------------------
      Init
      ------------------------------------------------------------------------ */
   async function init() {
@@ -176,10 +206,17 @@
         loadJSON("data.json"),
       ]);
 
+      // Sync active button state
+      document.querySelectorAll(".lang-btn").forEach((btn) => {
+        btn.classList.toggle("lang-btn--active", btn.dataset.lang === lang);
+      });
+      document.documentElement.lang = lang;
+
       applyI18n(strings);
       renderServices(strings.services && strings.services.items);
       renderProjects(data.projects || [], strings.cases || {});
       initLightbox(data.projects || []);
+      initLangToggle(data);
     } catch (err) {
       console.error("[init] failed:", err);
       const host = document.getElementById("projects");

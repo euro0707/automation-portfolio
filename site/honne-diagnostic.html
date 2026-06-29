@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本音と焦り仕分け診断</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-dark:  #5b4fcf;
+      --purple-mid:   #7c6fe0;
+      --purple-light: #eef0ff;
+      --green-dark:   #0a7a52;
+      --green-mid:    #10b981;
+      --green-light:  #d1fae5;
+      --amber-dark:   #92400e;
+      --amber-mid:    #f59e0b;
+      --amber-light:  #fef3c7;
+      --gray-dark:    #374151;
+      --gray-mid:     #9ca3af;
+      --gray-light:   #f3f4f6;
+      --bg:           #f4f6fb;
+      --card-bg:      #ffffff;
+      --text:         #2d2d45;
+      --muted:        #7a7a99;
+      --radius-lg:    20px;
+      --radius-md:    12px;
+      --radius-sm:    8px;
+      --shadow:       0 4px 24px rgba(80,70,160,.10);
+      --shadow-sm:    0 2px 10px rgba(80,70,160,.07);
+    }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── SECTION SYSTEM ─────────────────────────────── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0 16px 60px;
+    }
+    .screen.visible { display: flex; }
+
+    /* ── HERO ────────────────────────────────────────── */
+    #screen-hero {
+      background: linear-gradient(145deg, #5b4fcf 0%, #8b63e8 55%, #b97aed 100%);
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      padding: 40px 24px 80px;
+    }
+    .hero-emoji { font-size: 72px; margin-bottom: 18px; }
+    .hero-title {
+      font-size: clamp(1.75rem, 6vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: clamp(.95rem, 3vw, 1.15rem);
+      opacity: .88;
+      max-width: 420px;
+      margin: 0 auto 44px;
+      line-height: 1.9;
+    }
+    .hero-note {
+      font-size: .82rem;
+      opacity: .65;
+      margin-top: 18px;
+    }
+
+    /* ── BUTTON STYLES ────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s, opacity .18s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); opacity: .9; }
+
+    .btn-hero {
+      background: #fff;
+      color: var(--purple-dark);
+      font-size: 1.1rem;
+      padding: 16px 44px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    }
+    .btn-hero:hover { box-shadow: 0 12px 40px rgba(0,0,0,.22); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+      color: #fff;
+      font-size: 1rem;
+      padding: 13px 36px;
+      box-shadow: 0 4px 18px rgba(91,79,207,.35);
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 2px solid #c7c3f0;
+      color: var(--purple-mid);
+      font-size: .9rem;
+      padding: 10px 24px;
+    }
+    .btn-back {
+      background: #ebebf5;
+      color: #888;
+      font-size: .9rem;
+      padding: 11px 24px;
+    }
+    .btn-next {
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+      color: #fff;
+      font-size: .95rem;
+      padding: 12px 28px;
+      box-shadow: 0 4px 16px rgba(91,79,207,.3);
+    }
+    .btn-retry {
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+      color: #fff;
+      font-size: 1rem;
+      padding: 15px 44px;
+      box-shadow: 0 4px 18px rgba(91,79,207,.35);
+    }
+
+    /* ── SHARED CARD ─────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px 22px;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* ── SCREEN HEADER ───────────────────────────────── */
+    .screen-header {
+      width: 100%;
+      max-width: 580px;
+      padding: 36px 0 20px;
+      text-align: center;
+    }
+    .screen-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--purple-dark);
+    }
+    .screen-header p { font-size: .9rem; color: var(--muted); margin-top: 5px; }
+
+    /* ── INPUT SCREEN ────────────────────────────────── */
+    #activity-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-num {
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 11px 14px;
+      border: 2px solid #e5e3f5;
+      border-radius: var(--radius-sm);
+      font-size: .98rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+      color: var(--text);
+    }
+    .input-row input:focus { border-color: var(--purple-mid); }
+    .input-row input::placeholder { color: #c0bedd; }
+
+    .del-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: .85rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+    .del-btn:hover { background: #fecaca; }
+
+    .add-row-btn {
+      width: 100%;
+      padding: 11px;
+      margin-top: 8px;
+      border: 2px dashed #c7c3f0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--purple-mid);
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .add-row-btn:hover { background: var(--purple-light); border-color: var(--purple-mid); }
+    .add-row-btn.hidden { display: none; }
+
+    .input-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 22px;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* ── QUESTION SCREEN ─────────────────────────────── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 580px;
+      padding-top: 32px;
+      padding-bottom: 18px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .progress-bar {
+      height: 7px;
+      background: #ddd8f8;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple-dark), var(--purple-mid));
+      border-radius: 99px;
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+    }
+
+    .activity-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+      color: #fff;
+      padding: 5px 16px;
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+
+    .q-item { margin-bottom: 20px; }
+    .q-text {
+      font-size: .97rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 9px;
+    }
+    .q-text span {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--purple-light);
+      color: var(--purple-dark);
+      font-size: .75rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 22px;
+      margin-right: 6px;
+    }
+
+    .answer-group {
+      display: flex;
+      gap: 7px;
+    }
+    .ans-btn {
+      flex: 1;
+      padding: 10px 4px;
+      border: 2px solid #e5e3f5;
+      border-radius: var(--radius-sm);
+      background: #fafafa;
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .ans-btn:hover { border-color: var(--purple-mid); background: var(--purple-light); }
+
+    .ans-btn.sel-yes    { border-color: var(--green-mid);  background: var(--green-light);  color: var(--green-dark);  }
+    .ans-btn.sel-mid    { border-color: var(--amber-mid);  background: var(--amber-light);  color: var(--amber-dark);  }
+    .ans-btn.sel-no     { border-color: #ef4444;           background: #fee2e2;              color: #991b1b;            }
+
+    .q-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 26px;
+      gap: 10px;
+    }
+
+    /* ── RESULT SCREEN ───────────────────────────────── */
+    #screen-result { padding-top: 0; }
+
+    .result-hero {
+      width: 100%;
+      background: linear-gradient(145deg, #5b4fcf, #8b63e8);
+      color: #fff;
+      text-align: center;
+      padding: 42px 20px 48px;
+      margin-bottom: -24px;
+    }
+    .result-hero h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .result-hero p  { font-size: .9rem; opacity: .8; }
+
+    .result-group {
+      width: 100%;
+      max-width: 580px;
+      margin-top: 28px;
+    }
+
+    .rg-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+    .rg-icon { font-size: 1.6rem; line-height: 1; margin-top: 2px; }
+    .rg-title { font-size: 1.05rem; font-weight: 800; }
+    .rg-comment { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+
+    .rg-cards { display: flex; flex-direction: column; gap: 9px; }
+
+    .rg-card {
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: .95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .rg-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* axis (green) */
+    .group-axis .rg-title     { color: var(--green-dark); }
+    .group-axis .rg-card      { background: var(--green-light); color: var(--green-dark); border-left: 5px solid var(--green-mid); }
+    .group-axis .rg-dot       { background: var(--green-mid); }
+
+    /* income (amber) */
+    .group-income .rg-title   { color: var(--amber-dark); }
+    .group-income .rg-card    { background: var(--amber-light); color: var(--amber-dark); border-left: 5px solid var(--amber-mid); }
+    .group-income .rg-dot     { background: var(--amber-mid); }
+
+    /* pending (gray) */
+    .group-pending .rg-title  { color: var(--gray-dark); }
+    .group-pending .rg-card   { background: var(--gray-light); color: var(--gray-dark); border-left: 5px solid var(--gray-mid); }
+    .group-pending .rg-dot    { background: var(--gray-mid); }
+
+    .rg-empty { font-size: .88rem; color: #bbb; font-style: italic; padding: 8px 4px; }
+
+    /* strategy */
+    .strategy-card {
+      width: 100%;
+      max-width: 580px;
+      margin-top: 30px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px 22px;
+      border-top: 5px solid var(--purple-mid);
+    }
+    .strategy-card h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--purple-dark);
+      margin-bottom: 12px;
+    }
+    .strategy-card p { font-size: .95rem; color: #555; line-height: 1.85; }
+
+    .retry-wrap {
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    /* ── TOAST ───────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #ff6b6b;
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 700;
+      padding: 12px 26px;
+      border-radius: 50px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.18);
+      pointer-events: none;
+      transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .3s;
+      opacity: 0;
+      z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ── MOBILE ──────────────────────────────────────── */
+    @media (max-width: 440px) {
+      .answer-group { flex-direction: column; }
+      .q-nav { flex-wrap: wrap; }
+      .q-nav .btn-back { order: 2; }
+      .q-nav .btn-next { order: 1; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===================== HERO ===================== -->
+<section id="screen-hero" class="screen visible">
+  <div class="hero-emoji">🧭</div>
+  <h1 class="hero-title">本音と焦り<br>仕分け診断</h1>
+  <p class="hero-sub">
+    その挑戦は、10年後もやりたいこと？<br>
+    それとも今の焦りから来たもの？
+  </p>
+  <button class="btn btn-hero" onclick="gotoInput()">診断をはじめる →</button>
+  <p class="hero-note">ログイン不要・全てブラウザで完結</p>
+</section>
+
+<!-- ===================== INPUT ==================== -->
+<section id="screen-input" class="screen">
+  <div class="screen-header">
+    <h2>やりたいことを入力</h2>
+    <p>最大6個まで。思いつくものをどんどん書いてみよう</p>
+  </div>
+
+  <div class="card">
+    <div id="activity-list"></div>
+    <button class="add-row-btn" id="add-row-btn" onclick="addRow()">＋ もう1つ追加する</button>
+  </div>
+
+  <div class="input-actions">
+    <button class="btn btn-primary" onclick="gotoQuestions()">質問へ進む &nbsp;→</button>
+    <button class="btn btn-ghost" onclick="show('screen-hero')">← トップに戻る</button>
+  </div>
+</section>
+
+<!-- ===================== QUESTIONS ================ -->
+<section id="screen-q" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">1 / 1 件目</span>
+      <span id="prog-name" style="font-weight:700;color:var(--purple-dark);max-width:60%;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="activity-tag">📌 <span id="q-activity-name"></span></div>
+    <div id="q-form"></div>
+    <div class="q-nav">
+      <button class="btn btn-back" id="btn-back" onclick="prevQ()">← 前へ</button>
+      <button class="btn btn-next" id="btn-next" onclick="nextQ()">次へ →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESULT =================== -->
+<section id="screen-result" class="screen">
+  <div class="result-hero">
+    <h2>🎯 診断結果</h2>
+    <p>あなたのやりたいことを整理しました</p>
+  </div>
+
+  <!-- 人生の軸 -->
+  <div class="result-group group-axis">
+    <div class="rg-header">
+      <span class="rg-icon">🌱</span>
+      <div>
+        <div class="rg-title">人生の軸</div>
+        <div class="rg-comment">焦らず育てる価値がある活動です</div>
+      </div>
+    </div>
+    <div class="rg-cards" id="list-axis"></div>
+  </div>
+
+  <!-- 収入のため -->
+  <div class="result-group group-income">
+    <div class="rg-header">
+      <span class="rg-icon">💰</span>
+      <div>
+        <div class="rg-title">収入のため</div>
+        <div class="rg-comment">生活を支えるための短期行動として割り切りましょう</div>
+      </div>
+    </div>
+    <div class="rg-cards" id="list-income"></div>
+  </div>
+
+  <!-- 今は保留 -->
+  <div class="result-group group-pending">
+    <div class="rg-header">
+      <span class="rg-icon">📝</span>
+      <div>
+        <div class="rg-title">今は保留</div>
+        <div class="rg-comment">今すぐ手を出さず、メモだけ残しておきましょう</div>
+      </div>
+    </div>
+    <div class="rg-cards" id="list-pending"></div>
+  </div>
+
+  <!-- 方針 -->
+  <div class="strategy-card">
+    <h3>🗓️ 次の3か月の方針</h3>
+    <p id="strategy-text"></p>
+  </div>
+
+  <div class="retry-wrap">
+    <button class="btn btn-retry" onclick="restart()">もう一度診断する</button>
+  </div>
+</section>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===================== SCRIPT ================== -->
+<script>
+  /* ---- DATA ---- */
+  const QUESTIONS = [
+    { id: 'q1', text: 'お金がなくてもやりたい？',         type: 'authentic' },
+    { id: 'q2', text: '10年後も続けたい？',               type: 'authentic' },
+    { id: 'q3', text: '家族や子どもと関わる未来がある？', type: 'authentic' },
+    { id: 'q4', text: '半年収益ゼロでも続けられる？',     type: 'authentic' },
+    { id: 'q5', text: '今すぐお金につながりそう？',       type: 'income'    },
+  ];
+
+  let activities = [];   // string[]
+  let answers = [];      // { q1,q2,q3,q4,q5 }[]  — index matches activities
+  let currentIdx = 0;
+
+  /* ---- SCREEN ---- */
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---- TOAST ---- */
+  let _toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  /* ---- INPUT SCREEN ---- */
+  function gotoInput() {
+    activities = ['', ''];
+    renderRows();
+    show('screen-input');
+  }
+
+  function renderRows() {
+    const list = document.getElementById('activity-list');
+    list.innerHTML = activities.map((val, i) => `
+      <div class="input-row" id="row-${i}">
+        <div class="input-num">${i + 1}</div>
+        <input
+          type="text"
+          placeholder="例：ゲーム開発、AI動画、配信..."
+          value="${esc(val)}"
+          maxlength="24"
+          oninput="activities[${i}]=this.value"
+        >
+        ${activities.length > 1
+          ? `<button class="del-btn" onclick="delRow(${i})" aria-label="削除">✕</button>`
+          : ''}
+      </div>
+    `).join('');
+    document.getElementById('add-row-btn').classList.toggle('hidden', activities.length >= 6);
+  }
+
+  function addRow() {
+    if (activities.length >= 6) return;
+    activities.push('');
+    renderRows();
+    // Focus the new input
+    const inputs = document.querySelectorAll('#activity-list input');
+    inputs[inputs.length - 1].focus();
+  }
+
+  function delRow(i) {
+    activities.splice(i, 1);
+    renderRows();
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ---- QUESTION SCREEN ---- */
+  function gotoQuestions() {
+    // Sync latest values from DOM
+    const inputs = document.querySelectorAll('#activity-list input');
+    activities = Array.from(inputs).map(el => el.value.trim());
+    activities = activities.filter(v => v.length > 0);
+
+    if (activities.length === 0) {
+      toast('やりたいことを1つ以上入力してください');
+      return;
+    }
+
+    answers = activities.map(() => ({}));
+    currentIdx = 0;
+    renderQ();
+    show('screen-q');
+  }
+
+  function renderQ() {
+    const name  = activities[currentIdx];
+    const total = activities.length;
+    const pct   = (currentIdx / total) * 100;
+
+    document.getElementById('prog-label').textContent  = `${currentIdx + 1} / ${total} 件目`;
+    document.getElementById('prog-name').textContent   = name;
+    document.getElementById('q-activity-name').textContent = name;
+    document.getElementById('prog-fill').style.width   = pct + '%';
+
+    const saved = answers[currentIdx] || {};
+
+    document.getElementById('q-form').innerHTML = QUESTIONS.map((q, qi) => {
+      const v = saved[q.id];
+      return `
+        <div class="q-item">
+          <div class="q-text"><span>${qi + 1}</span>${q.text}</div>
+          <div class="answer-group" id="ag-${qi}">
+            <button class="ans-btn ${v === 2 ? 'sel-yes' : ''}"
+              onclick="pick(${qi},'${q.id}',2,this)">はい</button>
+            <button class="ans-btn ${v === 1 ? 'sel-mid' : ''}"
+              onclick="pick(${qi},'${q.id}',1,this)">どちらでもない</button>
+            <button class="ans-btn ${v === 0 ? 'sel-no' : ''}"
+              onclick="pick(${qi},'${q.id}',0,this)">いいえ</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('btn-back').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.textContent = currentIdx === activities.length - 1 ? '結果を見る ✨' : '次へ →';
+  }
+
+  function pick(qIdx, qId, val, btn) {
+    if (!answers[currentIdx]) answers[currentIdx] = {};
+    answers[currentIdx][qId] = val;
+
+    const group = document.getElementById('ag-' + qIdx);
+    group.querySelectorAll('.ans-btn').forEach(b => {
+      b.className = 'ans-btn';
+    });
+    const cls = val === 2 ? 'sel-yes' : val === 1 ? 'sel-mid' : 'sel-no';
+    btn.classList.add(cls);
+  }
+
+  function prevQ() {
+    if (currentIdx > 0) { currentIdx--; renderQ(); }
+  }
+
+  function nextQ() {
+    const ans = answers[currentIdx] || {};
+    const unanswered = QUESTIONS.filter(q => ans[q.id] === undefined);
+    if (unanswered.length > 0) {
+      toast('すべての質問に答えてください');
+      return;
+    }
+    if (currentIdx < activities.length - 1) {
+      currentIdx++;
+      renderQ();
+    } else {
+      showResult();
+    }
+  }
+
+  /* ---- CLASSIFY ---- */
+  function classify(i) {
+    const a = answers[i] || {};
+    const auth   = (a.q1 ?? 0) + (a.q2 ?? 0) + (a.q3 ?? 0) + (a.q4 ?? 0); // 0-8
+    const income = a.q5 ?? 0;                                                 // 0-2
+
+    if (auth >= 5) return 'axis';
+    if (income === 2 && auth <= 4) return 'income';
+    return 'pending';
+  }
+
+  /* ---- RESULT ---- */
+  function showResult() {
+    const groups = { axis: [], income: [], pending: [] };
+    activities.forEach((name, i) => groups[classify(i)].push(name));
+
+    const render = (list, cls) => {
+      if (list.length === 0) return '<div class="rg-empty">該当なし</div>';
+      return list.map(n => `
+        <div class="rg-card">
+          <div class="rg-dot"></div>
+          ${esc(n)}
+        </div>
+      `).join('');
+    };
+
+    document.getElementById('list-axis').innerHTML    = render(groups.axis,    'axis');
+    document.getElementById('list-income').innerHTML  = render(groups.income,  'income');
+    document.getElementById('list-pending').innerHTML = render(groups.pending, 'pending');
+
+    document.getElementById('strategy-text').textContent = makeStrategy(groups);
+
+    // Update progress bar to 100%
+    document.getElementById('prog-fill').style.width = '100%';
+
+    show('screen-result');
+  }
+
+  function makeStrategy(g) {
+    const { axis, income, pending } = g;
+    const parts = [];
+
+    if (axis.length > 0 && income.length > 0) {
+      parts.push(
+        `「${axis[0]}」など人生の軸を1つ丁寧に育てつつ、` +
+        `「${income[0]}」などの収入のための行動は時間を決めて取り組みましょう。`
+      );
+    } else if (axis.length > 0) {
+      parts.push(
+        `「${axis.join('・')}」は本音からの活動です。` +
+        `焦らず長期視点でじっくり育てることに集中しましょう。`
+      );
+    } else if (income.length > 0) {
+      parts.push(
+        `「${income.join('・')}」で生活基盤を安定させつつ、` +
+        `本当にやりたいことを改めて探す時間も意識してつくりましょう。`
+      );
+    } else {
+      parts.push(
+        `今は焦らず立ち止まる時期かもしれません。` +
+        `気になることをメモしながら、自分の本音をゆっくり探しましょう。`
+      );
+    }
+
+    if (pending.length > 0) {
+      parts.push(
+        `「${pending.join('・')}」は今すぐ手を出さず、` +
+        `3か月後に改めて見直しましょう。`
+      );
+    }
+
+    return parts.join(' ');
+  }
+
+  /* ---- RESTART ---- */
+  function restart() {
+    activities = ['', ''];
+    answers = [];
+    currentIdx = 0;
+    renderRows();
+    show('screen-input');
+  }
+</script>
+</body>
+</html>

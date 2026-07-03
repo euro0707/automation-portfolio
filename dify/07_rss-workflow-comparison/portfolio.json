@@ -12,7 +12,12 @@
     { "label": "Platforms compared", "value": "Dify vs n8n" },
     { "label": "Hosting", "value": "Self-hosted (Docker)" }
   ],
-  "images": [],
+  "images": [
+    { "src": "img/dify-workflow-canvas.png", "caption": "Dify workflow: RSS fetch (Code node) → Claude Haiku classification → Slack notification" },
+    { "src": "img/slack-notification.jpg", "caption": "Real-time Slack digest posted by the Dify workflow" },
+    { "src": "img/n8n-workflow-canvas.png", "caption": "n8n workflow (comparison build): Schedule → Read RSS Feed → Code (JS) → Send to Slack" },
+    { "src": "img/slack-rss-notification.png", "caption": "Daily RSS digest posted by the n8n workflow" }
+  ],
   "repoPath": "dify/07_rss-workflow-comparison",
   "order": 7
 }

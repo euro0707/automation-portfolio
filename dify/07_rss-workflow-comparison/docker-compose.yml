@@ -81,9 +81,55 @@ services:
       - CONSOLE_WEB_URL=http://localhost:8080
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - TZ=Asia/Tokyo
+      - INNER_API_KEY_FOR_PLUGIN=${INNER_API_KEY_FOR_PLUGIN:-dify-plugin-inner-api-key-2026}
+      - PLUGIN_DAEMON_URL=http://plugin_daemon:5002
+      - PLUGIN_DAEMON_KEY=${INNER_API_KEY_FOR_PLUGIN:-dify-plugin-inner-api-key-2026}
+      - PLUGIN_REMOTE_INSTALL_HOST=localhost
+      - PLUGIN_REMOTE_INSTALL_PORT=5004
+      - PLUGIN_MAX_PACKAGE_SIZE=52428800
+      - PLUGIN_DAEMON_TIMEOUT=600.0
     depends_on:
       - redis
       - postgres
+    volumes:
+      - ./dify_data/storage:/app/storage
+    networks:
+      - automation-network
+    restart: unless-stopped
+
+  plugin_daemon:
+    image: langgenius/dify-plugin-daemon:0.6.1-local
+    container_name: dify-plugin-daemon
+    expose:
+      - "5002"
+    ports:
+      - "5004:5003"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=dify
+      - DB_PASSWORD=${DB_PASSWORD:-difypassword}
+      - DB_DATABASE=dify
+      - SERVER_PORT=5002
+      - SERVER_KEY=${INNER_API_KEY_FOR_PLUGIN:-dify-plugin-inner-api-key-2026}
+      - DIFY_INNER_API_URL=http://dify-api:5001
+      - DIFY_INNER_API_KEY=${INNER_API_KEY_FOR_PLUGIN:-dify-plugin-inner-api-key-2026}
+      - STORAGE_TYPE=local
+      - STORAGE_LOCAL_PATH=/app/storage
+      - PLUGIN_WORKING_PATH=/app/storage/plugins
+      - PLUGIN_REMOTE_INSTALLING_HOST=0.0.0.0
+      - PLUGIN_REMOTE_INSTALLING_PORT=5003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - FORCE_VERIFYING_SIGNATURE=false
+      - PYTHON_ENV_INIT_TIMEOUT=120
+      - MAX_PLUGIN_PACKAGE_SIZE=52428800
+      - TZ=Asia/Tokyo
+    depends_on:
+      - postgres
+      - redis
+      - dify-api
     volumes:
       - ./dify_data/storage:/app/storage
     networks:

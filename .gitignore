@@ -13,6 +13,7 @@ site/img/
 
 dify/07_rss-workflow-comparison/.n8n/
 dify/07_rss-workflow-comparison/dify_data/
+dify/07_rss-workflow-comparison/notes.md
 
 # Personal job-hunt notes & data — not portfolio deliverables
 EXECUTION_SUMMARY.md
@@ -26,3 +27,9 @@ jobs-data.json
 upwork-job-scraper.ps1
 upwork-proposal-evaluator.md
 send-discord-notification.ps1
+
+# Personal profile draft — never publish
+upwork-profile.md
+
+# Local Claude dev notes (contains Upwork strategy) — keep private
+CLAUDE.md
